@@ -74,7 +74,7 @@ func encryptFile() {
 	}
 
 	// Generate random salt
-	iv := make([]byte, aes.BlockSize)
+	iv := make([]byte, 32)
 	if _, err := rand.Read(iv); err != nil {
 		log.Fatalf("salt error: %v", err.Error())
 	}
