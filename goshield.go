@@ -73,13 +73,20 @@ func encryptFile() {
 		log.Fatalf("filepath error: %v", err.Error())
 	}
 
+	// Generate random salt
+	salt, err := generateRandomBytes(32)
+	if err != nil {
+		log.Fatalf("salt error: %v", err.Error())
+	}
+	log.Trace("Salt:", salt)
+
 	plainText, err := os.ReadFile(absPath)
 	if err != nil {
 		log.Fatalf("read file err: %v", err.Error())
 	}
 
 	// Generating derivative key
-	dk := argon2.IDKey([]byte(CryptPw), []byte("c123bdb6574e817ac0a5f8b2e097b986"), 3, 64*1024, 4, 32)
+	dk := argon2.IDKey([]byte(CryptPw), salt, 3, 64*1024, 4, 32)
 	log.Trace("Derived Key:", dk)
 
 	// Creating block of algorithm
@@ -106,13 +113,37 @@ func encryptFile() {
 
 	// Writing ciphertext file
 	encFile := absPath + ".enc"
-	err = os.WriteFile(encFile, cipherText, 0777)
+
+	// Writing IV to file
+	err = os.WriteFile(encFile, salt, 0777)
 	if err != nil {
 		log.Fatalf("write file err: %v", err.Error())
 	} else {
-		log.Info("Writing encrypted file:", encFile)
+		log.Info("Writing salt to file:", encFile)
 	}
 
+	f, err := os.OpenFile(encFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0777)
+	if err != nil {
+		log.Fatalf("open file err: %v", err.Error())
+	}
+
+	defer f.Close()
+
+	_, err2 := f.Write(cipherText)
+	if err2 != nil {
+		log.Fatalf("write file err: %v", err.Error())
+	} else {
+		log.Info("Writing ciphertext to file:", encFile)
+	}
+
+	/*
+		err = os.WriteFile(encFile, cipherText, 0777)
+		if err != nil {
+			log.Fatalf("write file err: %v", err.Error())
+		} else {
+			log.Info("Writing encrypted file:", encFile)
+		}
+	*/
 }
 
 func decryptFile() {
@@ -159,4 +190,14 @@ func decryptFile() {
 	} else {
 		log.Info("Writing decrypted file:", decFile)
 	}
+}
+
+func generateRandomBytes(n uint32) ([]byte, error) {
+	b := make([]byte, n)
+	_, err := rand.Read(b)
+	if err != nil {
+		return nil, err
+	}
+
+	return b, nil
 }
