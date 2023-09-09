@@ -5,7 +5,6 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"flag"
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -17,31 +16,27 @@ import (
 )
 
 var (
-	CryptPw      string
-	FilePath     string
-	decryptPtr   bool
-	encryptPtr   bool
-	verbose      bool
-	extraverbose bool
+	CryptPw    string
+	FilePath   string
+	decryptPtr bool
+	encryptPtr bool
+	verbose    bool
+	debugPtr   bool
 )
 
 func init() {
 
-	flag.BoolVar(&encryptPtr, "e", false, "Flag sets mode to encrypt")
-	flag.BoolVar(&encryptPtr, "encrypt", false, "Flag sets mode to encrypt")
-	flag.BoolVar(&decryptPtr, "d", false, "Flag sets mode to decrypt")
-	flag.BoolVar(&decryptPtr, "decrypt", false, "Flag sets mode to decrypt")
-	flag.StringVar(&FilePath, "p", "", "Path to file")
-	flag.StringVar(&FilePath, "path", "", "Path to file")
-	flag.StringVar(&CryptPw, "k", "", "Password used to encrypt/decrypt")
-	flag.StringVar(&CryptPw, "pass", "", "Password used to encrypt/decrypt")
+	flag.BoolVar(&encryptPtr, "e", false, "Encrypt the input data.")
+	flag.BoolVar(&decryptPtr, "d", false, "Decrypt the input data.")
+	flag.StringVar(&FilePath, "in", "", "The input filename, standard input by default.")
+	flag.StringVar(&CryptPw, "k", "", "The password to derive the key from.")
 	flag.BoolVar(&verbose, "v", false, "Enables verbosity to default logger")
-	flag.BoolVar(&extraverbose, "vv", false, "Enables extra verbosity to default logger")
+	flag.BoolVar(&debugPtr, "debug", false, "Enables debug output to default logger")
 	flag.Parse()
 
 	if verbose {
 		log.SetLevel(log.InfoLevel)
-	} else if extraverbose {
+	} else if debugPtr {
 		log.SetLevel(log.TraceLevel)
 	} else {
 		log.SetLevel(log.WarnLevel)
@@ -63,10 +58,10 @@ func main() {
 	log.Trace("Password:", CryptPw)
 
 	if encryptPtr {
-		log.Println("Encrypting file:", fileName)
+		log.Info("Encrypting file:", fileName)
 		encryptFile()
 	} else if decryptPtr {
-		log.Println("Decrypting file:", fileName)
+		log.Info("Decrypting file:", fileName)
 		decryptFile()
 	}
 }
@@ -85,7 +80,7 @@ func encryptFile() {
 
 	// Generating derivative key
 	dk := argon2.IDKey([]byte(CryptPw), []byte("c123bdb6574e817ac0a5f8b2e097b986"), 3, 64*1024, 4, 32)
-	log.Println("Derived Key:", dk)
+	log.Trace("Derived Key:", dk)
 
 	// Creating block of algorithm
 	block, err := aes.NewCipher(dk)
@@ -104,7 +99,7 @@ func encryptFile() {
 	if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
 		log.Fatalf("nonce  err: %v", err.Error())
 	}
-	fmt.Println("Nonce:", nonce)
+	log.Trace("Nonce:", nonce)
 
 	// Decrypt file
 	cipherText := gcm.Seal(nonce, nonce, plainText, nil)
@@ -114,6 +109,8 @@ func encryptFile() {
 	err = os.WriteFile(encFile, cipherText, 0777)
 	if err != nil {
 		log.Fatalf("write file err: %v", err.Error())
+	} else {
+		log.Info("Writing encrypted file:", encFile)
 	}
 
 }
@@ -132,7 +129,7 @@ func decryptFile() {
 
 	// Generating derivative key
 	dk := argon2.IDKey([]byte(CryptPw), []byte("c123bdb6574e817ac0a5f8b2e097b986"), 3, 64*1024, 4, 32)
-	log.Println("Derived Key:", dk)
+	log.Trace("Derived Key:", dk)
 
 	// Creating block of algorithm
 	block, err := aes.NewCipher(dk)
@@ -159,5 +156,7 @@ func decryptFile() {
 	err = os.WriteFile(decFile, plainText, 0777)
 	if err != nil {
 		log.Fatalf("write file err: %v", err.Error())
+	} else {
+		log.Info("Writing decrypted file:", decFile)
 	}
 }
