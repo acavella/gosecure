@@ -74,11 +74,11 @@ func encryptFile() {
 	}
 
 	// Generate random salt
-	salt, err := generateRandomBytes(32)
-	if err != nil {
+	iv := make([]byte, aes.BlockSize)
+	if _, err := rand.Read(iv); err != nil {
 		log.Fatalf("salt error: %v", err.Error())
 	}
-	log.Trace("Salt:", salt)
+	log.Trace("Salt:", iv)
 
 	plainText, err := os.ReadFile(absPath)
 	if err != nil {
@@ -86,8 +86,8 @@ func encryptFile() {
 	}
 
 	// Generating derivative key
-	dk := argon2.IDKey([]byte(CryptPw), salt, 3, 64*1024, 4, 32)
-	log.Trace("Derived Key:", dk)
+	dk := argon2.IDKey([]byte(CryptPw), iv, 3, 64*1024, 4, 32)
+	log.Trace("Derived Key:", iv)
 
 	// Creating block of algorithm
 	block, err := aes.NewCipher(dk)
@@ -115,7 +115,7 @@ func encryptFile() {
 	encFile := absPath + ".enc"
 
 	// Writing IV to file
-	err = os.WriteFile(encFile, salt, 0777)
+	err = os.WriteFile(encFile, iv, 0777)
 	if err != nil {
 		log.Fatalf("write file err: %v", err.Error())
 	} else {
@@ -190,14 +190,4 @@ func decryptFile() {
 	} else {
 		log.Info("Writing decrypted file:", decFile)
 	}
-}
-
-func generateRandomBytes(n uint32) ([]byte, error) {
-	b := make([]byte, n)
-	_, err := rand.Read(b)
-	if err != nil {
-		return nil, err
-	}
-
-	return b, nil
 }
