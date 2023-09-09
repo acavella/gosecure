@@ -7,19 +7,22 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 
 	"golang.org/x/crypto/argon2"
 )
 
 var (
-	CryptPw    string
-	FilePath   string
-	decryptPtr bool
-	encryptPtr bool
+	CryptPw      string
+	FilePath     string
+	decryptPtr   bool
+	encryptPtr   bool
+	verbose      bool
+	extraverbose bool
 )
 
 func init() {
@@ -32,7 +35,17 @@ func init() {
 	flag.StringVar(&FilePath, "path", "", "Path to file")
 	flag.StringVar(&CryptPw, "k", "", "Password used to encrypt/decrypt")
 	flag.StringVar(&CryptPw, "pass", "", "Password used to encrypt/decrypt")
+	flag.BoolVar(&verbose, "v", false, "Enables verbosity to default logger")
+	flag.BoolVar(&extraverbose, "vv", false, "Enables extra verbosity to default logger")
 	flag.Parse()
+
+	if verbose {
+		log.SetLevel(log.InfoLevel)
+	} else if extraverbose {
+		log.SetLevel(log.TraceLevel)
+	} else {
+		log.SetLevel(log.WarnLevel)
+	}
 
 }
 
@@ -44,10 +57,10 @@ func main() {
 	}
 	workDir, fileName := filepath.Split(basePath)
 
-	fmt.Println("Base directory:", basePath)
-	fmt.Println("The file dir is:", workDir)
-	fmt.Println("The file name is:", fileName)
-	fmt.Println("Password:", CryptPw)
+	log.Debug("Base directory:", basePath)
+	log.Debug("The file dir is:", workDir)
+	log.Debug("The file name is:", fileName)
+	log.Trace("Password:", CryptPw)
 
 	if encryptPtr {
 		log.Println("Encrypting file:", fileName)
@@ -72,7 +85,7 @@ func encryptFile() {
 
 	// Generating derivative key
 	dk := argon2.IDKey([]byte(CryptPw), []byte("c123bdb6574e817ac0a5f8b2e097b986"), 3, 64*1024, 4, 32)
-	fmt.Println("Derived Key:", dk)
+	log.Println("Derived Key:", dk)
 
 	// Creating block of algorithm
 	block, err := aes.NewCipher(dk)
@@ -119,7 +132,7 @@ func decryptFile() {
 
 	// Generating derivative key
 	dk := argon2.IDKey([]byte(CryptPw), []byte("c123bdb6574e817ac0a5f8b2e097b986"), 3, 64*1024, 4, 32)
-	fmt.Println("Derived Key:", dk)
+	log.Println("Derived Key:", dk)
 
 	// Creating block of algorithm
 	block, err := aes.NewCipher(dk)
