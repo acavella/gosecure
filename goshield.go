@@ -17,7 +17,7 @@ import (
 
 var (
 	CryptPw    string
-	inFile     string
+	flagFile   string
 	decryptPtr bool
 	encryptPtr bool
 	verbose    bool
@@ -28,7 +28,7 @@ func init() {
 
 	flag.BoolVar(&encryptPtr, "e", false, "Encrypt the input data.")
 	flag.BoolVar(&decryptPtr, "d", false, "Decrypt the input data.")
-	flag.StringVar(&inFile, "in", "", "The input filename, standard input by default.")
+	flag.StringVar(&flagFile, "in", "", "The input filename, standard input by default.")
 	flag.StringVar(&CryptPw, "k", "", "The password to derive the key from.")
 	flag.BoolVar(&verbose, "v", false, "Enables verbosity to default logger")
 	flag.BoolVar(&debugPtr, "debug", false, "Enables debug output to default logger")
@@ -46,13 +46,13 @@ func init() {
 
 func main() {
 
-	inFileAbs, err := filepath.Abs(inFile)
+	inFile, err := filepath.Abs(flagFile)
 	if err != nil {
 		log.Fatalf("cipher err: %v", err.Error())
 	}
-	workDir, fileName := filepath.Split(inFileAbs)
+	workDir, fileName := filepath.Split(inFile)
 
-	log.Debug("Base directory:", inFileAbs)
+	log.Debug("Base directory:", inFile)
 	log.Debug("The file dir is:", workDir)
 	log.Debug("The file name is:", fileName)
 	log.Trace("Password:", CryptPw)
@@ -68,7 +68,7 @@ func main() {
 
 func encryptFile() {
 	// Reading plaintext file
-	absPath, err := filepath.Abs(inFile)
+	inFile, err := filepath.Abs(flagFile)
 	if err != nil {
 		log.Fatalf("filepath error: %v", err.Error())
 	}
@@ -77,7 +77,7 @@ func encryptFile() {
 	salt := make([]byte, 32)
 	log.Trace("Salt:", salt)
 
-	plainText, err := os.ReadFile(absPath)
+	plainText, err := os.ReadFile(inFile)
 	if err != nil {
 		log.Fatalf("read file err: %v", err.Error())
 	}
@@ -109,7 +109,7 @@ func encryptFile() {
 	cipherText := gcm.Seal(nonce, nonce, plainText, nil)
 
 	// Writing ciphertext file
-	encFile := absPath + ".enc"
+	encFile := inFile + ".enc"
 
 	// Writing IV to file
 	err = os.WriteFile(encFile, salt, 0777)
@@ -145,12 +145,18 @@ func encryptFile() {
 
 func decryptFile() {
 	// Reading ciphertext file
-	absPath, err := filepath.Abs(inFile)
+	inFile, err := filepath.Abs(flagFile)
 	if err != nil {
 		log.Fatalf("filepath error: %v", err.Error())
 	}
 
-	cipherText, err := os.ReadFile(absPath)
+	// Ensure input file is .enc type
+	fileExt := filepath.Ext(inFile)
+	if fileExt != ".enc" {
+		log.Fatal("Input file expects .enc, provided:", fileExt)
+	}
+
+	cipherText, err := os.ReadFile(inFile)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -180,7 +186,7 @@ func decryptFile() {
 	}
 
 	// Writing decryption content
-	decFile := strings.TrimSuffix(absPath, filepath.Ext(absPath))
+	decFile := strings.TrimSuffix(inFile, filepath.Ext(inFile))
 	err = os.WriteFile(decFile, plainText, 0777)
 	if err != nil {
 		log.Fatalf("write file err: %v", err.Error())
