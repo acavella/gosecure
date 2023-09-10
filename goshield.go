@@ -1,160 +1,203 @@
 package main
 
 import (
-	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
-	"encoding/binary"
 	"flag"
-	"fmt"
-	"log"
+	"io"
 	"os"
+	"path/filepath"
+	"strings"
+
+	log "github.com/sirupsen/logrus"
 
 	"golang.org/x/crypto/argon2"
 )
 
-// encryptFile encrypts the file specified by filename with the given key,
-// placing the result in outFilename (or filename + ".enc" if outFilename is
-// empty). The key has to be 16, 24 or 32 bytes long to select between AES-128,
-// AES-192 or AES-256. Returns the name of the output file if successful.
-func encryptFile(key string, filename string, outFilename string, dk []byte) (string, error) {
-	if len(outFilename) == 0 {
-		outFilename = filename + ".enc"
+var (
+	CryptPw    string
+	FilePath   string
+	decryptPtr bool
+	encryptPtr bool
+	verbose    bool
+	debugPtr   bool
+)
+
+func init() {
+
+	flag.BoolVar(&encryptPtr, "e", false, "Encrypt the input data.")
+	flag.BoolVar(&decryptPtr, "d", false, "Decrypt the input data.")
+	flag.StringVar(&FilePath, "in", "", "The input filename, standard input by default.")
+	flag.StringVar(&CryptPw, "k", "", "The password to derive the key from.")
+	flag.BoolVar(&verbose, "v", false, "Enables verbosity to default logger")
+	flag.BoolVar(&debugPtr, "debug", false, "Enables debug output to default logger")
+	flag.Parse()
+
+	if verbose {
+		log.SetLevel(log.InfoLevel)
+	} else if debugPtr {
+		log.SetLevel(log.TraceLevel)
+	} else {
+		log.SetLevel(log.WarnLevel)
 	}
 
-	plaintext, err := os.ReadFile(filename)
-	if err != nil {
-		return "", err
-	}
-
-	of, err := os.Create(outFilename)
-	if err != nil {
-		return "", err
-	}
-	defer of.Close()
-
-	// Write the original plaintext size into the output file first, encoded in
-	// a 8-byte integer.
-	origSize := uint64(len(plaintext))
-	if err = binary.Write(of, binary.LittleEndian, origSize); err != nil {
-		return "", err
-	}
-
-	// Pad plaintext to a multiple of BlockSize with random padding.
-	if len(plaintext)%aes.BlockSize != 0 {
-		bytesToPad := aes.BlockSize - (len(plaintext) % aes.BlockSize)
-		padding := make([]byte, bytesToPad)
-		if _, err := rand.Read(padding); err != nil {
-			return "", err
-		}
-		plaintext = append(plaintext, padding...)
-	}
-
-	// Generate random IV and write it to the output file.
-	salt := make([]byte, 32)
-	iv := argon2.IDKey([]byte(key), salt, 3, 64*1024, 4, 32)
-	if _, err := rand.Read(iv); err != nil {
-		return "", err
-	}
-	if _, err = of.Write(iv); err != nil {
-		return "", err
-	}
-
-	// Ciphertext has the same size as the padded plaintext.
-	ciphertext := make([]byte, len(plaintext))
-
-	// Use AES implementation of the cipher.Block interface to encrypt the whole
-	// file in CBC mode.
-	block, err := aes.NewCipher(key)
-	if err != nil {
-		return "", err
-	}
-	mode := cipher.NewCBCEncrypter(block, iv)
-	mode.CryptBlocks(ciphertext, plaintext)
-
-	if _, err = of.Write(ciphertext); err != nil {
-		return "", err
-	}
-	return outFilename, nil
-}
-
-// decryptFile decrypts the file specified by filename with the given key. See
-// doc for encryptFile for more details.
-func decryptFile(key string, filename string, outFilename string) (string, error) {
-	if len(outFilename) == 0 {
-		outFilename = filename + ".dec"
-	}
-
-	ciphertext, err := os.ReadFile(filename)
-	if err != nil {
-		return "", err
-	}
-
-	of, err := os.Create(outFilename)
-	if err != nil {
-		return "", err
-	}
-	defer of.Close()
-
-	// cipertext has the original plaintext size in the first 8 bytes, then IV
-	// in the next 16 bytes, then the actual ciphertext in the rest of the buffer.
-	// Read the original plaintext size, and the IV.
-	var origSize uint64
-	buf := bytes.NewReader(ciphertext)
-	if err = binary.Read(buf, binary.LittleEndian, &origSize); err != nil {
-		return "", err
-	}
-	iv := make([]byte, aes.BlockSize)
-	if _, err = buf.Read(iv); err != nil {
-		return "", err
-	}
-
-	// The remaining ciphertext has size=paddedSize.
-	paddedSize := len(ciphertext) - 8 - aes.BlockSize
-	if paddedSize%aes.BlockSize != 0 {
-		return "", fmt.Errorf("want padded plaintext size to be aligned to block size")
-	}
-	plaintext := make([]byte, paddedSize)
-
-	block, err := aes.NewCipher(key)
-	if err != nil {
-		return "", err
-	}
-	mode := cipher.NewCBCDecrypter(block, iv)
-	mode.CryptBlocks(plaintext, ciphertext[8+aes.BlockSize:])
-
-	if _, err := of.Write(plaintext[:origSize]); err != nil {
-		return "", err
-	}
-	return outFilename, nil
 }
 
 func main() {
-	encFlag := flag.Bool("e", false, "encrypt")
-	decFlag := flag.Bool("d", false, "decrypt")
-	keyFlag := flag.String("k", "", "encryption key")
 
-	flag.Parse()
-	filename := flag.Arg(0)
-
-	// Uses a constant key
-	key := *keyFlag
-
-	if *encFlag {
-		outFilename, err := encryptFile(key, filename, "")
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Println("Encrypted output file:", outFilename)
-	} else if *decFlag {
-		outFilename, err := decryptFile(key, filename, "")
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Println("Decrypted output file:", outFilename)
-	} else {
-		//fmt.Println(flag.Usage)
-		os.Exit(1)
+	basePath, err := filepath.Abs(FilePath)
+	if err != nil {
+		log.Fatalf("cipher err: %v", err.Error())
 	}
+	workDir, fileName := filepath.Split(basePath)
+
+	log.Debug("Base directory:", basePath)
+	log.Debug("The file dir is:", workDir)
+	log.Debug("The file name is:", fileName)
+	log.Trace("Password:", CryptPw)
+
+	if encryptPtr {
+		log.Info("Encrypting file:", fileName)
+		encryptFile()
+	} else if decryptPtr {
+		log.Info("Decrypting file:", fileName)
+		decryptFile()
+	}
+}
+
+func encryptFile() {
+	// Reading plaintext file
+	absPath, err := filepath.Abs(FilePath)
+	if err != nil {
+		log.Fatalf("filepath error: %v", err.Error())
+	}
+
+	// Generate random salt
+	salt, err := generateRandomBytes(32)
+	if err != nil {
+		log.Fatalf("salt error: %v", err.Error())
+	}
+	log.Trace("Salt:", salt)
+
+	plainText, err := os.ReadFile(absPath)
+	if err != nil {
+		log.Fatalf("read file err: %v", err.Error())
+	}
+
+	// Generating derivative key
+	dk := argon2.IDKey([]byte(CryptPw), salt, 3, 64*1024, 4, 32)
+	log.Trace("Derived Key:", dk)
+
+	// Creating block of algorithm
+	block, err := aes.NewCipher(dk)
+	if err != nil {
+		log.Fatalf("cipher err: %v", err.Error())
+	}
+
+	// Creating GCM mode
+	gcm, err := cipher.NewGCM(block)
+	if err != nil {
+		log.Fatalf("cipher GCM err: %v", err.Error())
+	}
+
+	// Generating random nonce
+	nonce := make([]byte, gcm.NonceSize())
+	if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
+		log.Fatalf("nonce  err: %v", err.Error())
+	}
+	log.Trace("Nonce:", nonce)
+
+	// Decrypt file
+	cipherText := gcm.Seal(nonce, nonce, plainText, nil)
+
+	// Writing ciphertext file
+	encFile := absPath + ".enc"
+
+	// Writing IV to file
+	err = os.WriteFile(encFile, salt, 0777)
+	if err != nil {
+		log.Fatalf("write file err: %v", err.Error())
+	} else {
+		log.Info("Writing salt to file:", encFile)
+	}
+
+	f, err := os.OpenFile(encFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0777)
+	if err != nil {
+		log.Fatalf("open file err: %v", err.Error())
+	}
+
+	defer f.Close()
+
+	_, err2 := f.Write(cipherText)
+	if err2 != nil {
+		log.Fatalf("write file err: %v", err.Error())
+	} else {
+		log.Info("Writing ciphertext to file:", encFile)
+	}
+
+	/*
+		err = os.WriteFile(encFile, cipherText, 0777)
+		if err != nil {
+			log.Fatalf("write file err: %v", err.Error())
+		} else {
+			log.Info("Writing encrypted file:", encFile)
+		}
+	*/
+}
+
+func decryptFile() {
+	// Reading ciphertext file
+	absPath, err := filepath.Abs(FilePath)
+	if err != nil {
+		log.Fatalf("filepath error: %v", err.Error())
+	}
+
+	cipherText, err := os.ReadFile(absPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Generating derivative key
+	dk := argon2.IDKey([]byte(CryptPw), []byte("c123bdb6574e817ac0a5f8b2e097b986"), 3, 64*1024, 4, 32)
+	log.Trace("Derived Key:", dk)
+
+	// Creating block of algorithm
+	block, err := aes.NewCipher(dk)
+	if err != nil {
+		log.Fatalf("cipher err: %v", err.Error())
+	}
+
+	// Creating GCM mode
+	gcm, err := cipher.NewGCM(block)
+	if err != nil {
+		log.Fatalf("cipher GCM err: %v", err.Error())
+	}
+
+	// Deattached nonce and decrypt
+	nonce := cipherText[:gcm.NonceSize()]
+	cipherText = cipherText[gcm.NonceSize():]
+	plainText, err := gcm.Open(nil, nonce, cipherText, nil)
+	if err != nil {
+		log.Fatalf("decrypt file err: %v", err.Error())
+	}
+
+	// Writing decryption content
+	decFile := strings.TrimSuffix(absPath, filepath.Ext(absPath))
+	err = os.WriteFile(decFile, plainText, 0777)
+	if err != nil {
+		log.Fatalf("write file err: %v", err.Error())
+	} else {
+		log.Info("Writing decrypted file:", decFile)
+	}
+}
+
+func generateRandomBytes(n uint32) ([]byte, error) {
+	b := make([]byte, n)
+	_, err := rand.Read(b)
+	if err != nil {
+		return nil, err
+	}
+
+	return b, nil
 }
