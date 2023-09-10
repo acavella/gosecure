@@ -17,7 +17,7 @@ import (
 
 var (
 	CryptPw    string
-	FilePath   string
+	inFile     string
 	decryptPtr bool
 	encryptPtr bool
 	verbose    bool
@@ -28,7 +28,7 @@ func init() {
 
 	flag.BoolVar(&encryptPtr, "e", false, "Encrypt the input data.")
 	flag.BoolVar(&decryptPtr, "d", false, "Decrypt the input data.")
-	flag.StringVar(&FilePath, "in", "", "The input filename, standard input by default.")
+	flag.StringVar(&inFile, "in", "", "The input filename, standard input by default.")
 	flag.StringVar(&CryptPw, "k", "", "The password to derive the key from.")
 	flag.BoolVar(&verbose, "v", false, "Enables verbosity to default logger")
 	flag.BoolVar(&debugPtr, "debug", false, "Enables debug output to default logger")
@@ -46,13 +46,13 @@ func init() {
 
 func main() {
 
-	basePath, err := filepath.Abs(FilePath)
+	inFileAbs, err := filepath.Abs(inFile)
 	if err != nil {
 		log.Fatalf("cipher err: %v", err.Error())
 	}
-	workDir, fileName := filepath.Split(basePath)
+	workDir, fileName := filepath.Split(inFileAbs)
 
-	log.Debug("Base directory:", basePath)
+	log.Debug("Base directory:", inFileAbs)
 	log.Debug("The file dir is:", workDir)
 	log.Debug("The file name is:", fileName)
 	log.Trace("Password:", CryptPw)
@@ -68,7 +68,7 @@ func main() {
 
 func encryptFile() {
 	// Reading plaintext file
-	absPath, err := filepath.Abs(FilePath)
+	absPath, err := filepath.Abs(inFile)
 	if err != nil {
 		log.Fatalf("filepath error: %v", err.Error())
 	}
@@ -145,7 +145,7 @@ func encryptFile() {
 
 func decryptFile() {
 	// Reading ciphertext file
-	absPath, err := filepath.Abs(FilePath)
+	absPath, err := filepath.Abs(inFile)
 	if err != nil {
 		log.Fatalf("filepath error: %v", err.Error())
 	}
