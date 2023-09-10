@@ -74,10 +74,7 @@ func encryptFile() {
 	}
 
 	// Generate random salt
-	salt, err := generateRandomBytes(32)
-	if err != nil {
-		log.Fatalf("salt error: %v", err.Error())
-	}
+	salt := make([]byte, 32)
 	log.Trace("Salt:", salt)
 
 	plainText, err := os.ReadFile(absPath)
@@ -190,14 +187,4 @@ func decryptFile() {
 	} else {
 		log.Info("Writing decrypted file:", decFile)
 	}
-}
-
-func generateRandomBytes(n uint32) ([]byte, error) {
-	b := make([]byte, n)
-	_, err := rand.Read(b)
-	if err != nil {
-		return nil, err
-	}
-
-	return b, nil
 }
