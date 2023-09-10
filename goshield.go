@@ -10,13 +10,15 @@ import (
 	"fmt"
 	"log"
 	"os"
+
+	"golang.org/x/crypto/argon2"
 )
 
 // encryptFile encrypts the file specified by filename with the given key,
 // placing the result in outFilename (or filename + ".enc" if outFilename is
 // empty). The key has to be 16, 24 or 32 bytes long to select between AES-128,
 // AES-192 or AES-256. Returns the name of the output file if successful.
-func encryptFile(key []byte, filename string, outFilename string) (string, error) {
+func encryptFile(key string, filename string, outFilename string, dk []byte) (string, error) {
 	if len(outFilename) == 0 {
 		outFilename = filename + ".enc"
 	}
@@ -50,7 +52,8 @@ func encryptFile(key []byte, filename string, outFilename string) (string, error
 	}
 
 	// Generate random IV and write it to the output file.
-	iv := make([]byte, aes.BlockSize)
+	salt := make([]byte, 32)
+	iv := argon2.IDKey([]byte(key), salt, 3, 64*1024, 4, 32)
 	if _, err := rand.Read(iv); err != nil {
 		return "", err
 	}
@@ -78,7 +81,7 @@ func encryptFile(key []byte, filename string, outFilename string) (string, error
 
 // decryptFile decrypts the file specified by filename with the given key. See
 // doc for encryptFile for more details.
-func decryptFile(key []byte, filename string, outFilename string) (string, error) {
+func decryptFile(key string, filename string, outFilename string) (string, error) {
 	if len(outFilename) == 0 {
 		outFilename = filename + ".dec"
 	}
@@ -130,12 +133,14 @@ func decryptFile(key []byte, filename string, outFilename string) (string, error
 func main() {
 	encFlag := flag.Bool("e", false, "encrypt")
 	decFlag := flag.Bool("d", false, "decrypt")
+	keyFlag := flag.String("k", "", "encryption key")
 
 	flag.Parse()
 	filename := flag.Arg(0)
 
 	// Uses a constant key
-	key := bytes.Repeat([]byte("1"), 32)
+	key := *keyFlag
+
 	if *encFlag {
 		outFilename, err := encryptFile(key, filename, "")
 		if err != nil {
@@ -149,7 +154,7 @@ func main() {
 		}
 		fmt.Println("Decrypted output file:", outFilename)
 	} else {
-		fmt.Println(flag.Usage)
+		//fmt.Println(flag.Usage)
 		os.Exit(1)
 	}
 }
