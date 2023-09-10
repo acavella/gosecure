@@ -8,5 +8,36 @@
 ## Description
 A simple utility to easily encrypt and decrypt files written in Golang. Goshield utilizes the AES-256-GCM symetric encryption algorithm and Argon2id key derivation function to secure files. Files are encrypted and decrypted utilizing a user provided password.
 
+# Diagram
+
+```shell
+┌────────┬────────────┬────────────────────────────────────────────┐
+│        │            │                                            │
+│  SALT  │  Password  │                     Plaintext              │
+│        │            │                                            │
+└────┬───┴──────────┬─┴─────────────────────┬──────────────────────┘
+     │              │                       │
+     │              │                       │
+     ├──────────┐   │                       │
+     │          │   │                       │
+     │          │   │                       │
+     │          ▼   ▼                       ▼
+     │    ┌────────────────┐      ┌──────────────────┐
+     │    │                │      │                  │
+     │    │  Argon2id KDF  ├─────►│  GCM Encryption  │
+     │    │                │      │                  │
+     │    └────────────────┘      └─────────┬────────┘
+     │                                      │
+     │                                      │
+     ▼                                      ▼
+ ┌────────┬────────────────────────────────────────────────────────┐
+ │        │                                                        │
+ │  SALT  │                     Ciphertext                         │
+ │        │                                                        │
+ ├────────┼────────────────────────────────────────────────────────┤
+ │        │                                                        │
+ 0        32                                                      EOF
+```
+
 ## Credit
 Initial script is based on the hard work of Eli Bendersky [https://eli.thegreenplace.net]
