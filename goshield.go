@@ -8,7 +8,6 @@ import (
 	"encoding/binary"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 )
@@ -84,7 +83,7 @@ func decryptFile(key []byte, filename string, outFilename string) (string, error
 		outFilename = filename + ".dec"
 	}
 
-	ciphertext, err := ioutil.ReadFile(filename)
+	ciphertext, err := os.ReadFile(filename)
 	if err != nil {
 		return "", err
 	}
