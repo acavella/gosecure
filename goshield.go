@@ -5,7 +5,6 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"flag"
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -25,8 +24,6 @@ var (
 	debugPtr   bool
 )
 
-var Version = "0.0.0"
-
 func init() {
 
 	flag.BoolVar(&encryptPtr, "e", false, "Encrypt the input data.")
@@ -45,7 +42,6 @@ func init() {
 		log.SetLevel(log.WarnLevel)
 	}
 
-	fmt.Printf("App Version: %s\n", Version)
 }
 
 func main() {
