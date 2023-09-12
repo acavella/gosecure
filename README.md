@@ -1,4 +1,4 @@
-# goshield
+![GoShield Logo](docs/assets/goshield_logo.png)
 ![GitHub](https://img.shields.io/github/license/acavella/goshield)
 ![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/t/acavella/goshield)
 ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/acavella/goshield/main)

@@ -10,6 +10,7 @@
 # Exclude binary directories
 bin/
 assets/
+test/
 
 # Test binary, built with `go test -c`
 *.test
