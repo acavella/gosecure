@@ -37,4 +37,6 @@ A simple utility to easily encrypt and decrypt files written in Golang. Goshield
 ```
 
 ## Credit
-Initial script is based on the hard work of Eli Bendersky [https://eli.thegreenplace.net]
+Initial development and work is based of the hard work of the following folks:
+- Eli Bendersky (https://eli.thegreenplace.net)
+- Mert Kimyonşen (https://github.com/mrtkmynsndev/)
