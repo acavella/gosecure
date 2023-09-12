@@ -24,13 +24,30 @@ func decryptFile() {
 		log.Fatal("Input file expects .enc, provided:", fileExt)
 	}
 
+	// Retrieve salt from file
+	xfile, err := os.Open(inFile) // For read access.
+
+	if err != nil {
+		panic(err)
+	}
+
+	defer xfile.Close()
+
+	xheadBytes := make([]byte, 32)
+	m, err := xfile.Read(xheadBytes)
+	if err != nil {
+		panic(err)
+	}
+
+	var salt = xheadBytes[:m]
+
 	cipherText, err := os.ReadFile(inFile)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// Generating derivative key
-	dk := argon2.IDKey([]byte(CryptPw), []byte("c123bdb6574e817ac0a5f8b2e097b986"), 3, 64*1024, 4, 32)
+	dk := argon2.IDKey([]byte(CryptPw), salt, 3, 64*1024, 4, 32)
 	log.Trace("Derived Key:", dk)
 
 	// Creating block of algorithm
