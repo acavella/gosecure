@@ -3,6 +3,8 @@ package main
 import (
 	"crypto/aes"
 	"crypto/cipher"
+	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -10,6 +12,35 @@ import (
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/crypto/argon2"
 )
+
+func extractciphertext() {
+	// Reading ciphertext file
+	inFile, err := filepath.Abs(flagFile)
+	if err != nil {
+		log.Fatalf("filepath error: %v", err.Error())
+	}
+
+	fin, err := os.Open(inFile)
+	if err != nil {
+		panic(err)
+	}
+	defer fin.Close()
+
+	fout, err := os.Create("dest.txt")
+	if err != nil {
+		panic(err)
+	}
+	defer fout.Close()
+
+	// Offset is the number of bytes you want to exclude
+	_, err = fin.Seek(32, io.SeekStart)
+	if err != nil {
+		panic(err)
+	}
+
+	n, err := io.Copy(fout, fin)
+	fmt.Printf("Copied %d bytes, err: %v", n, err)
+}
 
 func decryptFile() {
 	// Reading ciphertext file
@@ -41,7 +72,9 @@ func decryptFile() {
 
 	salt := xheadBytes[:m]
 
-	cipherText, err := os.ReadFile(inFile)
+	extractciphertext()
+
+	cipherText, err := os.ReadFile("dest.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
