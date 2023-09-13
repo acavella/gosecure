@@ -24,7 +24,7 @@ func decryptFile() {
 		log.Fatal("Input file expects .enc, provided:", fileExt)
 	}
 
-	// Retrieve salt from file
+	// Read salt from file
 	xfile, err := os.Open(inFile) // For read access.
 
 	if err != nil {
@@ -39,7 +39,7 @@ func decryptFile() {
 		panic(err)
 	}
 
-	var salt = xheadBytes[:m]
+	salt := xheadBytes[:m]
 
 	cipherText, err := os.ReadFile(inFile)
 	if err != nil {
