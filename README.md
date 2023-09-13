@@ -17,9 +17,7 @@ A simple utility to easily encrypt and decrypt files written in Golang. Goshield
 └────┬───┘  └───────┬──┘  └────────────────┬────────────────┘
      │              │                      │
      │              │                      │
-     │              │                      │
      ├──────────┐   │                      │
-     │          │   │                      │
      │          │   │                      │
      │          ▼   ▼                      ▼
      │    ┌────────────────┐      ┌──────────────────┐
@@ -39,10 +37,10 @@ A simple utility to easily encrypt and decrypt files written in Golang. Goshield
 ```shell
                0        32                                               EOF
  ┌──────────┐  ┌────────┬─────────────────────────────────────────────────┐
- │          │  │        │                                                 │
  │ Password │  │  SALT  │                     Ciphertext                  │
- │          │  │        │                                                 │
  └─────┬────┘  └───┬────┴──────────────────────────┬──────────────────────┘
+       │           │                               │
+       │           │                               │
        │           │                               │
        │           │                               │
        │           │                               │
@@ -56,9 +54,7 @@ A simple utility to easily encrypt and decrypt files written in Golang. Goshield
                                                    │
                                                    ▼
                          ┌─────────────────────────────────────────────────┐
-                         │                                                 │
                          │                     Plaintext                   │
-                         │                                                 │
                          └─────────────────────────────────────────────────┘
 ```
 
