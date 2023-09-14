@@ -171,7 +171,7 @@ Each commit message consists of a **header**, a **body**, and a **footer**.
 
 The `header` is mandatory and must conform to the [Commit Message Header](#commit-header) format.
 
-The `body` is mandatory for all commits except for those of type "docs".
+The `body` is recommended for all commits.
 When the body is present it must be at least 20 characters long and must conform to the [Commit Message Body](#commit-body) format.
 
 The `footer` is optional. The [Commit Message Footer](#commit-footer) format describes what the footer is used for and the structure it must have.
@@ -183,17 +183,11 @@ The `footer` is optional. The [Commit Message Footer](#commit-footer) format des
 <type>: <short summary>
   │       │
   │       └─⫸ Summary in present tense. Not capitalized. No period at the end.
-  │       
-  │       
-  │                          elements|forms|http|language-service|localize|platform-browser|
-  │                          platform-browser-dynamic|platform-server|router|service-worker|
-  │                          upgrade|zone.js|packaging|changelog|docs-infra|migrations|ngcc|ve|
-  │                          devtools
   │
   └─⫸ Commit Type: build|ci|docs|feat|fix|perf|refactor|test
 ```
 
-The `<type>` and `<summary>` fields are mandatory, the `(<scope>)` field is optional.
+The `<type>` and `<summary>` fields are mandatory
 
 
 ##### Type
@@ -208,52 +202,6 @@ Must be one of the following:
 * **perf**: A code change that improves performance
 * **refactor**: A code change that neither fixes a bug nor adds a feature
 * **test**: Adding missing tests or correcting existing tests
-
-
-##### Scope
-The scope should be the name of the npm package affected (as perceived by the person reading the changelog generated from commit messages).
-
-The following is the list of supported scopes:
-
-* `animations`
-* `bazel`
-* `benchpress`
-* `common`
-* `compiler`
-* `compiler-cli`
-* `core`
-* `elements`
-* `forms`
-* `http`
-* `language-service`
-* `localize`
-* `platform-browser`
-* `platform-browser-dynamic`
-* `platform-server`
-* `router`
-* `service-worker`
-* `upgrade`
-* `zone.js`
-
-There are currently a few exceptions to the "use package name" rule:
-
-* `packaging`: used for changes that change the npm package layout in all of our packages, e.g. public path changes, package.json changes done to all packages, d.ts file/format changes, changes to bundles, etc.
-
-* `changelog`: used for updating the release notes in CHANGELOG.md
-
-* `dev-infra`: used for dev-infra related changes within the directories /scripts and /tools
-
-* `docs-infra`: used for docs-app (angular.io) related changes within the /aio directory of the repo
-
-* `migrations`: used for changes to the `ng update` migrations.
-
-* `ngcc`: used for changes to the [Angular Compatibility Compiler](./packages/compiler-cli/ngcc/README.md)
-
-* `ve`: used for changes specific to ViewEngine (legacy compiler/renderer).
-
-* `devtools`: used for changes in the [browser extension](./devtools/README.md).
-
-* none/empty string: useful for `test` and `refactor` changes that are done across all packages (e.g. `test: add missing unit tests`) and for docs changes that are not related to a specific package (e.g. `docs: fix typo in tutorial`).
 
 
 ##### Summary
@@ -283,7 +231,6 @@ BREAKING CHANGE: <breaking change summary>
 <BLANK LINE>
 <breaking change description + migration instructions>
 <BLANK LINE>
-<BLANK LINE>
 Fixes #<issue number>
 ```
 
@@ -293,7 +240,6 @@ or
 DEPRECATED: <what is deprecated>
 <BLANK LINE>
 <deprecation description + recommended update path>
-<BLANK LINE>
 <BLANK LINE>
 Closes #<pr number>
 ```
@@ -334,16 +280,6 @@ The following documents can help you sort out issues with GitHub accounts and mu
 
 
 
-[angular-group]: https://groups.google.com/forum/#!forum/angular
-[coc]: https://github.com/angular/code-of-conduct/blob/master/CODE_OF_CONDUCT.md
 [commit-message-format]: https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#
-[corporate-cla]: https://cla.developers.google.com/about/google-corporate
-[dev-doc]: https://github.com/angular/angular/blob/main/docs/DEVELOPER.md
-[github]: https://github.com/angular/angular
-[discord]: https://discord.gg/angular
-[individual-cla]: https://cla.developers.google.com/about/google-individual
-[js-style-guide]: https://google.github.io/styleguide/jsguide.html
-[jsfiddle]: https://jsfiddle.net/
-[plunker]: https://plnkr.co/edit
-[runnable]: https://runnable.com/
-[stackoverflow]: https://stackoverflow.com/questions/tagged/angular
+[github]: https://github.com/acavella/goshield
+[individual-cla]: https://docs.google.com/forms/d/e/1FAIpQLSdm2XP04g3d3VrxBzuQcYjnnGc9-M2qCb9wD_ysM79UXjH5-w/viewform?usp=sf_link
