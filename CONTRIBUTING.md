@@ -279,7 +279,7 @@ The following documents can help you sort out issues with GitHub accounts and mu
 
 
 
-
+[coc]: https://github.com/acavella/goshield/blob/a3353d4bde9775be5f8555f2553be5201fc3086a/CODE_OF_CONDUCT.md
 [commit-message-format]: https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#
 [github]: https://github.com/acavella/goshield
 [individual-cla]: https://docs.google.com/forms/d/e/1FAIpQLSdm2XP04g3d3VrxBzuQcYjnnGc9-M2qCb9wD_ysM79UXjH5-w/viewform?usp=sf_link
