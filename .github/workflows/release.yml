@@ -1,19 +1,36 @@
+name: Release Go Binaries
+
 on:
   release:
     types: [created]
 
+env:
+  CMD_PATH: ./cmd/vt2geojson
+
 jobs:
-  release-linux-amd64:
-    name: release linux/amd64
+  releases-matrix:
+    name: Release Matrix
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos: [linux]
+        goarch: [amd64]
     steps:
-    - uses: actions/checkout@v3
-    - uses: wangyoucao577/go-release-action@v1
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        goos: linux
-        goarch: amd64
-        goversion: "1.20"
-        binary_name: "goshield"
-        ldflags: "-X main.appVersion=${{ inputs.tags }}"
-        extra_files: LICENSE README.md
+      - uses: actions/checkout@v2
+      - name: Set APP_VERSION env
+        run: echo APP_VERSION=$(basename ${GITHUB_REF}) >> ${GITHUB_ENV}
+      - name: Set BUILD_TIME env
+        run: echo BUILD_TIME=$(date --iso-8601=seconds) >> ${GITHUB_ENV}
+      - name: Environment Printer
+        uses: managedkaos/print-env@master
+
+      - uses: wangyoucao577/go-release-action@v1.16
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          goos: ${{ matrix.goos }}
+          goarch: ${{ matrix.goarch }}
+          project_path: "${{ env.CMD_PATH }}"
+          goversion: "1.20"
+          binary_name: "goshield"
+          ldflags: -X "main.appVersion=${{ env.APP_VERSION }}"
+          extra_files: LICENSE README.md
