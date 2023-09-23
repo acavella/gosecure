@@ -4,9 +4,6 @@ on:
   release:
     types: [created]
 
-env:
-  CMD_PATH: ./cmd/vt2geojson
-
 jobs:
   releases-matrix:
     name: Release Matrix
@@ -15,22 +12,20 @@ jobs:
       matrix:
         goos: [linux]
         goarch: [amd64]
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set APP_VERSION env
-        run: echo APP_VERSION=$(basename ${GITHUB_REF}) >> ${GITHUB_ENV}
-      - name: Set BUILD_TIME env
-        run: echo BUILD_TIME=$(date --iso-8601=seconds) >> ${GITHUB_ENV}
-      - name: Environment Printer
-        uses: managedkaos/print-env@master
 
-      - uses: wangyoucao577/go-release-action@v1.16
+    steps:
+      - name: Get Release Info
+        run: |
+          {
+            echo "RELEASE_TAG=${GITHUB_REF/refs\/tags\//}"
+          } >> "$GITHUB_ENV"
+      - uses: actions/checkout@v3
+      - uses: wangyoucao577/go-release-action@v1.40
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           goos: ${{ matrix.goos }}
           goarch: ${{ matrix.goarch }}
-          project_path: "${{ env.CMD_PATH }}"
           goversion: "1.20"
           binary_name: "goshield"
-          ldflags: -X "main.appVersion=${{ env.APP_VERSION }}"
+          ldflags: -X "main.appVersion=${{ env.RELEASE_TAG }}"
           extra_files: LICENSE README.md
