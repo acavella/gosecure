@@ -12,8 +12,17 @@ import (
 	"golang.org/x/crypto/argon2"
 )
 
-func generateSalt() byte {
+// Generate a random salt return the result as byte
+func generateRandomSalt() []byte {
+	var result = make([]byte, 32)
 
+	_, err := rand.Read(result[:])
+
+	if err != nil {
+		log.Fatalf("error generating salt: %v", err.Error())
+	}
+
+	return result
 }
 
 func encryptFile() {
@@ -23,8 +32,8 @@ func encryptFile() {
 		log.Fatalf("filepath error: %v", err.Error())
 	}
 
-	// Generate random salt
-	salt := make([]byte, 32)
+	// Generate salt
+	salt := generateRandomSalt()
 	log.Trace("Salt:", salt)
 
 	plainText, err := os.ReadFile(inFile)
