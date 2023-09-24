@@ -12,6 +12,10 @@ import (
 	"golang.org/x/crypto/argon2"
 )
 
+func generateSalt() byte {
+
+}
+
 func encryptFile() {
 	// Reading plaintext file
 	inFile, err := filepath.Abs(flagFile)
