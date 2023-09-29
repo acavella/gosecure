@@ -36,18 +36,7 @@ func init() {
 	} else {
 		log.SetLevel(log.WarnLevel)
 	}
-	/*
-		inFile, err := filepath.Abs(flagFile)
-		if err != nil {
-			log.Fatalf("cipher err: %v", err.Error())
-		}
 
-		workDir, fileName := filepath.Split(inFile)
-
-		log.Debug("Base directory:", inFile)
-		log.Debug("The file dir is:", workDir)
-		log.Debug("The file name is:", fileName)
-	*/
 	getfiles()
 	printver()
 
