@@ -6,7 +6,6 @@ import (
 	"crypto/rand"
 	"io"
 	"os"
-	"path/filepath"
 
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/crypto/argon2"
@@ -26,11 +25,6 @@ func generateRandomSalt() []byte {
 }
 
 func encryptFile() {
-	// Reading plaintext file
-	inFile, err := filepath.Abs(flagFile)
-	if err != nil {
-		log.Fatalf("filepath error: %v", err.Error())
-	}
 
 	// Generate salt
 	salt := generateRandomSalt()

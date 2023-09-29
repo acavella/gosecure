@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"path/filepath"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -13,6 +14,9 @@ var (
 	encryptPtr bool
 	verbose    bool
 	debugPtr   bool
+	inFile     string
+	fileName   string
+	workDir    string
 )
 
 func init() {
@@ -32,7 +36,28 @@ func init() {
 	} else {
 		log.SetLevel(log.WarnLevel)
 	}
+	/*
+		inFile, err := filepath.Abs(flagFile)
+		if err != nil {
+			log.Fatalf("cipher err: %v", err.Error())
+		}
 
+		workDir, fileName := filepath.Split(inFile)
+
+		log.Debug("Base directory:", inFile)
+		log.Debug("The file dir is:", workDir)
+		log.Debug("The file name is:", fileName)
+	*/
+	getfiles()
 	printver()
 
+}
+
+func getfiles() (inFile, fileName, workDir string) {
+	inFile, err := filepath.Abs(flagFile)
+	if err != nil {
+		log.Fatalf("file error: %v", err.Error())
+	}
+	workDir, fileName = filepath.Split(inFile)
+	return
 }
