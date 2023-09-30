@@ -2,9 +2,9 @@ package main
 
 import "fmt"
 
-var appVersion = "No Version Provided"
-var appBuild = "No Build Provided"
-var appDate = "No Build Date"
+var appVersion = "v0.0.0"
+var appBuild = "0000000"
+var appDate = "0/0/00"
 
 func printver() {
 	fmt.Printf("GoShield %s\n", appVersion)

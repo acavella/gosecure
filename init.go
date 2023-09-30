@@ -8,15 +8,15 @@ import (
 )
 
 var (
-	CryptPw    string
-	flagFile   string
-	decryptPtr bool
-	encryptPtr bool
-	verbose    bool
-	debugPtr   bool
-	inFile     string
-	fileName   string
-	workDir    string
+	CryptPw     string
+	flagFile    string
+	decryptPtr  bool
+	encryptPtr  bool
+	verbose     bool
+	debugPtr    bool
+	absPath     string
+	fileName    string
+	workingPath string
 )
 
 func init() {
@@ -42,11 +42,11 @@ func init() {
 
 }
 
-func getfiles() (inFile, fileName, workDir string) {
-	inFile, err := filepath.Abs(flagFile)
+func getfiles() (absPath, fileName, workingPath string) {
+	absPath, err := filepath.Abs(flagFile)
 	if err != nil {
 		log.Fatalf("file error: %v", err.Error())
 	}
-	workDir, fileName = filepath.Split(inFile)
+	workingPath, fileName = filepath.Split(absPath)
 	return
 }

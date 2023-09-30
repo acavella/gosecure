@@ -6,6 +6,7 @@ import (
 	"crypto/rand"
 	"io"
 	"os"
+	"path/filepath"
 
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/crypto/argon2"
@@ -30,7 +31,12 @@ func encryptFile() {
 	salt := generateRandomSalt()
 	log.Trace("Salt:", salt)
 
-	plainText, err := os.ReadFile(inFile)
+	absPath, err := filepath.Abs(flagFile)
+	if err != nil {
+		log.Fatalf("file error: %v", err.Error())
+	}
+
+	plainText, err := os.ReadFile(absPath)
 	if err != nil {
 		log.Fatalf("read file err: %v", err.Error())
 	}
@@ -62,7 +68,7 @@ func encryptFile() {
 	cipherText := gcm.Seal(nonce, nonce, plainText, nil)
 
 	// Writing ciphertext file
-	encFile := inFile + ".enc"
+	encFile := absPath + ".enc"
 
 	// Writing IV to file
 	err = os.WriteFile(encFile, salt, 0777)
