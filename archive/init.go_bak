@@ -30,7 +30,7 @@ func init() {
 
 }
 
-func getfiles() (absPath, fileName, workingPath string) {
+func getfiles() (absPath, workingPath, fileName string) {
 	absPath, err := filepath.Abs(flagFile)
 	if err != nil {
 		log.Fatalf("file error: %v", err.Error())
