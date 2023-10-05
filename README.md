@@ -9,6 +9,13 @@
 ## Description
 A simple utility to easily encrypt and decrypt files written in Golang. Goshield utilizes the AES-256-GCM symetric encryption algorithm and Argon2id key derivation function to secure files. Files are encrypted and decrypted utilizing a user provided password.
 
+## Instructions
+### Installation
+1. Navigate to the [latest release](https://github.com/acavella/goshield/releases/latest)
+2. Download the binary appropriate for your operating system and architecture (Windows-AMD64 or Linux-AMD64)
+3. Additionally, you can download the latest source and build an appropriate binary for your architecture
+*Note: We are only able to support official builds*
+
 ## Process Diagrams
 ### Encryption
 ```shell
