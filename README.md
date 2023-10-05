@@ -16,6 +16,22 @@ A simple utility to easily encrypt and decrypt files written in Golang. Goshield
 3. Additionally, you can download the latest source and build an appropriate binary for your architecture
 *Note: We are only able to support official builds*
 
+### Usage
+#### File Encryption
+```shell
+$ ./goshield -e -in "/path/to/file" -k "<Your-Password>"
+```
+#### File Decryption
+```shell
+$ ./goshield -d -in "/path/to/file" -k "<Your-Password>"
+```
+### Command Line Options
+- -e Encrypt the input data.
+- -d Decrypt the input data.
+- -in The input filename, standard input by default.
+- -k The password to derive the key from.
+- -v Enables verbosity to default logger.
+- -debug Enables debug output to default logger.
 ## Process Diagrams
 ### Encryption
 ```shell
