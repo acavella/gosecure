@@ -26,12 +26,12 @@ $ ./goshield -e -in "/path/to/file" -k "<Your-Password>"
 $ ./goshield -d -in "/path/to/file" -k "<Your-Password>"
 ```
 ### Command Line Options
-- -e Encrypt the input data.
-- -d Decrypt the input data.
-- -in The input filename, standard input by default.
-- -k The password to derive the key from.
-- -v Enables verbosity to default logger.
-- -debug Enables debug output to default logger.
+- **-e** Encrypt the input data.
+- **-d** Decrypt the input data.
+- **-in** The input filename, standard input by default.
+- **-k** The password to derive the key from.
+- **-v** Enables verbosity to default logger.
+- **-debug** Enables debug output to default logger.
 ## Process Diagrams
 ### Encryption
 ```shell
