@@ -1,6 +1,6 @@
-# Contributing to GoShield
+# Contributing to GoSecure
 
-We would love for you to contribute to GoShield and help make it even better than it is today!
+We would love for you to contribute to GoSecure and help make it even better than it is today!
 As a contributor, here are the guidelines we would like you to follow:
 
  - [Code of Conduct](#coc)
@@ -14,7 +14,7 @@ As a contributor, here are the guidelines we would like you to follow:
 
 ## <a name="coc"></a> Code of Conduct
 
-Help us keep GoShield open and inclusive.
+Help us keep GoSecure open and inclusive.
 Please read and follow our [Code of Conduct][coc].
 
 
@@ -62,7 +62,7 @@ You can file new issues by selecting from our [new issue templates](https://gith
 
 Before you submit your Pull Request (PR) consider the following guidelines:
 
-1. Search [GitHub](https://github.com/acavella/goshield/pulls) for an open or closed PR that relates to your submission.
+1. Search [GitHub](https://github.com/acavella/gosecure/pulls) for an open or closed PR that relates to your submission.
    You don't want to duplicate existing efforts.
 
 2. Be sure that an issue describes the problem you're fixing, or documents the design for the feature you'd like to add.
@@ -72,7 +72,7 @@ Before you submit your Pull Request (PR) consider the following guidelines:
    We cannot accept code without a signed CLA.
    Make sure you author all contributed Git commits with email address associated with your CLA signature.
 
-4. [Fork](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) the acavella/goshield repo.
+4. [Fork](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) the acavella/gosecure repo.
 
 5. In your forked repository, make your changes in a new git branch:
 
@@ -96,11 +96,11 @@ Before you submit your Pull Request (PR) consider the following guidelines:
     git push origin my-fix-branch
     ```
 
-9.  In GitHub, send a pull request to `goshield:main`.
+9.  In GitHub, send a pull request to `gosecure:main`.
 
 ### Reviewing a Pull Request
 
-The GoShield team reserves the right not to accept pull requests.
+The GoSecure team reserves the right not to accept pull requests.
 
 #### Addressing review feedback
 
@@ -279,7 +279,7 @@ The following documents can help you sort out issues with GitHub accounts and mu
 
 
 
-[coc]: https://github.com/acavella/goshield/blob/a3353d4bde9775be5f8555f2553be5201fc3086a/CODE_OF_CONDUCT.md
+[coc]: https://github.com/acavella/gosecure/blob/a3353d4bde9775be5f8555f2553be5201fc3086a/CODE_OF_CONDUCT.md
 [commit-message-format]: https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#
-[github]: https://github.com/acavella/goshield
+[github]: https://github.com/acavella/gosecure
 [individual-cla]: https://docs.google.com/forms/d/e/1FAIpQLSdm2XP04g3d3VrxBzuQcYjnnGc9-M2qCb9wD_ysM79UXjH5-w/viewform?usp=sf_link

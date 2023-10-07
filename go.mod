@@ -1,4 +1,4 @@
-module github.com/acavella/goshield
+module github.com/acavella/gosecure
 
 go 1.20
 

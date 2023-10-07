@@ -1,17 +1,17 @@
-![GoShield Logo](docs/assets/goshield_logo_60.png)
+![GoSecure Logo](docs/assets/gosecure_logo_60.png)
 ---
-![GitHub](https://img.shields.io/github/license/acavella/goshield)
-![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/t/acavella/goshield)
-![GitHub last commit (branch)](https://img.shields.io/github/last-commit/acavella/goshield/main)
-![GitHub go.mod Go version (branch & subdirectory of monorepo)](https://img.shields.io/github/go-mod/go-version/acavella/goshield/main)
-![GitHub release (with filter)](https://img.shields.io/github/v/release/acavella/goshield)
+![GitHub](https://img.shields.io/github/license/acavella/gosecure)
+![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/t/acavella/gosecure)
+![GitHub last commit (branch)](https://img.shields.io/github/last-commit/acavella/gosecure/main)
+![GitHub go.mod Go version (branch & subdirectory of monorepo)](https://img.shields.io/github/go-mod/go-version/acavella/gosecure/main)
+![GitHub release (with filter)](https://img.shields.io/github/v/release/acavella/gosecure)
 
 ## Description
 A simple utility to easily encrypt and decrypt files written in Golang. Goshield utilizes the AES-256-GCM symetric encryption algorithm and Argon2id key derivation function to secure files. Files are encrypted and decrypted utilizing a user provided password.
 
 ## Instructions
 ### Installation
-1. Navigate to the [latest release](https://github.com/acavella/goshield/releases/latest)
+1. Navigate to the [latest release](https://github.com/acavella/gosecure/releases/latest)
 2. Download the binary appropriate for your operating system and architecture (Windows-AMD64 or Linux-AMD64)
 3. Additionally, you can download the latest source and build an appropriate binary for your architecture
 *Note: We are only able to support official builds*
@@ -19,11 +19,11 @@ A simple utility to easily encrypt and decrypt files written in Golang. Goshield
 ### Usage
 #### File Encryption
 ```shell
-$ ./goshield -e -in "/path/to/file" -k "<Your-Password>"
+$ ./gosecure -e -in "/path/to/file" -k "<Your-Password>"
 ```
 #### File Decryption
 ```shell
-$ ./goshield -d -in "/path/to/file" -k "<Your-Password>"
+$ ./gosecure -d -in "/path/to/file" -k "<Your-Password>"
 ```
 ### Command Line Options
 ```shell
