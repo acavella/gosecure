@@ -7,7 +7,7 @@
 ![GitHub release (with filter)](https://img.shields.io/github/v/release/acavella/gosecure)
 
 ## Description
-A simple utility to easily encrypt and decrypt files written in Golang. GoSecure utilizes the AES-256-GCM symetric encryption algorithm and Argon2id key derivation function to secure files. Files are encrypted and decrypted utilizing a user provided password.
+A simple utility to encrypt and decrypt files utilizing a user provided password. GoSecure is written in Golang utilizing the standard crypto libraries. Files are encrypted utlizing AES-256-GCM symetric encryption algorithm and Argon2id key derivation function. 
 
 ## Instructions
 ### Installation
