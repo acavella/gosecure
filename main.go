@@ -10,6 +10,9 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"syscall"
+
+	"golang.org/x/term"
 
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/crypto/argon2"
@@ -52,6 +55,15 @@ func init() {
 
 func main() {
 
+	if CryptPw == "" {
+		fmt.Println("Enter encryption password:")
+		pwin, err := term.ReadPassword(int(syscall.Stdin))
+		if err != nil {
+			log.Fatalf("input error: %v", err.Error())
+		}
+		CryptPw = string(pwin)
+	}
+
 	log.Trace("Password:", CryptPw)
 
 	if encryptPtr {
@@ -61,6 +73,7 @@ func main() {
 		log.Info("Decrypting file:", fileName)
 		decryptFile()
 	}
+
 }
 
 func getfiles() (absPath, workingPath, fileName string) {
